@@ -1,0 +1,51 @@
+# Proyecto A - Red de la empresa
+#   borde - interno:   10.7.0.0/30    (borde .1, interno .2)
+#   Oficinas:          10.7.1.0/24    (interno .1, pc1 .10)
+#   Servidores:        10.7.2.0/24    (interno .1, srv1 .10)
+#   VPN:               10.7.100.0/24  (borde .1)
+
+name: empresa
+
+topology:
+  defaults:
+    kind: linux
+
+  nodes:
+    borde:
+      image: frr-wg:10.2.1
+      binds:
+        - ../daemons:/etc/frr/daemons
+        - ../vtysh.conf:/etc/frr/vtysh.conf
+        - borde/frr.conf:/etc/frr/frr.conf
+        - borde/wireguard:/etc/wireguard
+      ports:
+        - 51820:51820/udp
+      exec:
+        - wg-up
+
+    interno:
+      image: frr-wg:10.2.1
+      binds:
+        - ../daemons:/etc/frr/daemons
+        - ../vtysh.conf:/etc/frr/vtysh.conf
+        - interno/frr.conf:/etc/frr/frr.conf
+      exec:
+        - ip route del default dev eth0
+
+    pc1:
+      image: wbitt/network-multitool
+      exec:
+        - ip addr add 10.7.1.10/24 dev eth1
+        - ip route replace default via 10.7.1.1
+
+    srv1:
+      image: python:3.12-alpine
+      cmd: python3 -m http.server 80 --directory /tmp
+      exec:
+        - ip addr add 10.7.2.10/24 dev eth1
+        - ip route replace default via 10.7.2.1
+
+  links:
+    - endpoints: ["borde:eth1", "interno:eth1"]
+    - endpoints: ["interno:eth2", "pc1:eth1"]
+    - endpoints: ["interno:eth3", "srv1:eth1"]

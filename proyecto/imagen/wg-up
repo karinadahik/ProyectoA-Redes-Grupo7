@@ -1,0 +1,6 @@
+#!/bin/sh
+# Levanta cada tunel que encuentre en /etc/wireguard (un archivo .conf por tunel).
+for f in /etc/wireguard/*.conf; do
+  [ -e "$f" ] || continue
+  wg-quick up "$f"
+done

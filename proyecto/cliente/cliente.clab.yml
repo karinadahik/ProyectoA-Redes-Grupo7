@@ -1,0 +1,15 @@
+# Cliente de la VPN en contenedor, para el caso de un solo cliente real.
+# Se conecta a borde por la direccion publica de playit, igual que una PC cliente.
+
+name: cliente
+
+topology:
+  nodes:
+    cliente:
+      kind: linux
+      image: cliente-wg:1.0
+      binds:
+        - wg0.conf:/etc/wireguard/wg0.conf
+      cmd: sleep infinity
+      exec:
+        - wg-quick up wg0

@@ -1,0 +1,19 @@
+# Llaves y configuraciones privadas
+*.key
+*.pem
+wg*.conf
+client*.conf
+cliente*.conf
+playit.toml
+.env
+.env.*
+
+# Capturas de tráfico sin revisar
+*.pcap
+*.pcapng
+
+# Archivos temporales
+*:Zone.Identifier
+__pycache__/
+*.pyc
+proyecto/empresa/clab-empresa/
